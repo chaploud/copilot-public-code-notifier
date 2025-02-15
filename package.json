@@ -1,0 +1,58 @@
+{
+  "name": "copilot-public-code-notifier",
+  "displayName": "Copilot Public Code Notifier",
+  "description": "Notify when Copilot completion matches public code.",
+  "version": "0.0.1",
+  "publisher": "chaploud",
+  "engines": {
+    "vscode": "^1.97.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "copilot",
+    "public code",
+    "license"
+  ],
+  "icon": "assets/license-logo.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chaploud/copilot-public-code-notifier"
+  },
+  "main": "./out/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "copilot-public-code-notifier.helloWorld",
+        "title": "Hello World"
+      }
+    ]
+  },
+  "extensionDependencies": [
+    "github.copilot"
+  ],
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.97.0",
+    "@typescript-eslint/eslint-plugin": "^8.17.0",
+    "@typescript-eslint/parser": "^8.17.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.16.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.3"
+  }
+}
