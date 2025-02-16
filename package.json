@@ -38,7 +38,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-		"format": "prettier --write src/**/*.ts",
+    "format": "prettier --write src/**/*.ts",
     "lint": "eslint src",
     "test": "vscode-test"
   },

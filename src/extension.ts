@@ -24,21 +24,57 @@ function notifyLicenseInfo(licenseInfo: { count: number; licenseTypes: string[];
   vscode.window.showInformationMessage(message);
 }
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "copilot-public-code-notifier" is now active!');
+function watchLogFile(logFilePath: string) {
+  let previousContent = "";
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  const disposable = vscode.commands.registerCommand("copilot-public-code-notifier.helloWorld", () => {
-    // The code you place here will be executed every time your command is executed
-    // Display a message box to the user
-    vscode.window.showInformationMessage("Hello World from Copilot Public Code Notifier!");
+  const watcher = chokidar.watch(logFilePath, { persistent: true, usePolling: true, interval: 1000 });
+
+  watcher.on("change", (filePath) => {
+    fs.readFile(filePath, "utf8", (err, data) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+
+      const newContent = data;
+      const diff = newContent.substring(previousContent.length);
+      previousContent = newContent;
+
+      const lines = diff.split("\n");
+      for (const line of lines) {
+        const licenseInfo = parseLogLine(line);
+        if (licenseInfo) {
+          notifyLicenseInfo(licenseInfo);
+        }
+      }
+    });
   });
+}
+
+export function activate(context: vscode.ExtensionContext) {
+  // TODO: 現在のWindownとひもづく最新のGitHub Copilot Logのログファイル
+  // /home/shota/.config/Code/logs/20250215T192809/window1/exthost/output_logging_20250215T192812/7-GitHub Copilot Log.log
+  // Windows, Mac, Linuxでログファイルのパスが異なるので、それぞれの環境でログファイルのパスを取得する方法を調査する
+  // const logFilePath =
+  // "/home/shota/.config/Code/logs/20250216T094145/window4/exthost/output_logging_20250216T101037/2-GitHub Copilot Log.log";
+  // watchLogFile(logFilePath);
+
+  // context.subscriptions.push({
+  //   dispose: () => {
+  //     chokidar.watch(logFilePath).close();
+  //   },
+  // });
+
+  const disposable = vscode.commands.registerCommand("copilot-public-code-notifier.helloWorld", () => {
+    const commands = vscode.commands.getCommands().then((commands) => {
+      fs.writeFile("/tmp/vscode-commands.json", JSON.stringify(commands, null, 2), (err) => {
+        if (err) {
+          console.error(err);
+        }
+      });
+    });
+  });
+  vscode.window.showInformationMessage(`windowID: ${vscodeWindowId}`);
 
   context.subscriptions.push(disposable);
 }
